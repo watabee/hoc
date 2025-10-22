@@ -1,4 +1,5 @@
 .idea/
+cmake-build-debug/
 y.tab.c
 hoc.o
 hoc1
