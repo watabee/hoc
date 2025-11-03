@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define PREV_MEM_IDX 15 /* The index of mem[] used to store calculation results */
+
 void execerror(const char *s, const char *t);
 int yylex(void);
 void yyerror(const char *s);
@@ -30,14 +32,14 @@ list:       /* nothing */
 expr:     NUMBER        { $$ = $1; }
         | VAR           { $$ = mem[$1]; }
         | VAR '=' expr  { $$ = mem[$1] = $3; }
-        | expr '+' expr { $$ = $1 + $3; }
-        | expr '-' expr { $$ = $1 - $3; }
-        | expr '*' expr { $$ = $1 * $3; }
+        | expr '+' expr { $$ = mem[PREV_MEM_IDX] = $1 + $3; }
+        | expr '-' expr { $$ = mem[PREV_MEM_IDX] = $1 - $3; }
+        | expr '*' expr { $$ = mem[PREV_MEM_IDX] = $1 * $3; }
         | expr '/' expr {
                 if ($3 == 0.0)
                     execerror("division by zero", "");
-                $$ = $1 / $3; }
-        | expr '%' expr { $$ = fmod($1, $3); }
+                $$ = mem[PREV_MEM_IDX] = $1 / $3; }
+        | expr '%' expr { $$ = mem[PREV_MEM_IDX] = fmod($1, $3); }
         | '(' expr ')'  { $$ = $2; }
         | '+' expr %prec UNARY  { $$ = +$2; }
         | '-' expr %prec UNARY  { $$ = -$2; }
