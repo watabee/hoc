@@ -5,12 +5,11 @@
 
 #define PREV_MEM_IDX 15 /* The index of mem[] used to store calculation results */
 
+double  mem[26]; /* memory for variables 'a'..'z' */
+
 void execerror(const char *s, const char *t);
 int yylex(void);
 void yyerror(const char *s);
-%}
-%{
-double  mem[26]; /* memory for variables 'a'..'z' */
 %}
 %union {                /* stack type */
         double  val;    /* actual type */
