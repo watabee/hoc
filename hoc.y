@@ -27,6 +27,7 @@ double  mem[26]; /* memory for variables 'a'..'z' */
 list:       /* nothing */
         | list '\n'
         | list expr '\n'  { printf("\t%.8g\n", $2); }
+        | list expr ';'  { printf("\t%.8g\n", $2); }
         | list error '\n' { yyerrok; }
         ;
 expr:     NUMBER        { $$ = $1; }
