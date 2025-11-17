@@ -4,7 +4,9 @@ typedef struct Symbol { // symbol table entry
     char constant;
     union {
         double val; // if VAR
+        double (*ptr0)(); // if BLTIN
         double (*ptr)(double); // if BLTIN
+        double (*ptr2)(double, double); // if BLTIN
     } u;
     struct Symbol *next; // to link to another
 } Symbol;

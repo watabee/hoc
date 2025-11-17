@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <math.h>
 #include <errno.h>
 
@@ -14,6 +15,14 @@ double errcheck(double d, char *s) {
         execerror(s, "result out of range");
     }
     return d;
+}
+
+double Rand() {
+	return (double)rand() / RAND_MAX;
+}
+
+double Atan2(double x, double y) {
+    return errcheck(atan2(y, x), "atan2");
 }
 
 double Log(double x) {
