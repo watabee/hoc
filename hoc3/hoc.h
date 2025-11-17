@@ -1,3 +1,5 @@
+#define COMMAND_BUF_SIZE 1024
+
 typedef struct Symbol { // symbol table entry
     char *name;
     short type; // VAR, BLTIN, UNDEF

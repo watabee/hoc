@@ -1,5 +1,7 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "hoc.h"
 extern void init();
@@ -11,9 +13,11 @@ void yyerror(const char *s);
 %union {
         double  val;   /* actual type */
         Symbol  *sym;  /* symbol table pointer */
+        char    cmd[COMMAND_BUF_SIZE];  /* shell command */
 }
 %token  <val>   NUMBER
 %token  <sym>   VAR BLTIN UNDEF
+%token  <cmd>   COMMAND
 %type   <val>   expr asgn
 %right  '='
 %left   '+' '-' /* left associattive, same precedence */
@@ -25,6 +29,7 @@ list:       /* nothing */
         | list '\n'
         | list asgn '\n'
         | list expr '\n'  { printf("\t%.8g\n", $2); }
+        | list COMMAND '\n'  { system($2); }
         | list error '\n' { yyerrok; }
         ;
 asgn:     VAR '=' expr {
@@ -76,6 +81,16 @@ int yylex(void)
         ungetc(c, stdin);
         scanf("%lf", &yylval.val);
         return NUMBER;
+    }
+    if (c == '!') {
+        char sbuf[COMMAND_BUF_SIZE], *p = sbuf;
+        while ((c = getchar()) != EOF && c != '\n') {
+            *p++ = c;
+        }
+        ungetc(c, stdin);
+        *p = '\0';
+        strcpy(yylval.cmd, sbuf);
+        return COMMAND;
     }
     if (isalpha(c)) {
         Symbol *s;
