@@ -39,10 +39,10 @@ void init() {
     Symbol *s;
 
     for (i = 0; consts[i].name; i++) {
-        install(consts[i].name, VAR, consts[i].cval);
+        install(consts[i].name, VAR, consts[i].cval, 1);
     }
     for (i = 0; builtins[i].name; i++) {
-        s = install(builtins[i].name, BLTIN, 0.0);
+        s = install(builtins[i].name, BLTIN, 0.0, 1);
         s->u.ptr = builtins[i].func;
     }
 }

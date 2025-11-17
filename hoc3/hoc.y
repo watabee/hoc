@@ -27,7 +27,10 @@ list:       /* nothing */
         | list expr '\n'  { printf("\t%.8g\n", $2); }
         | list error '\n' { yyerrok; }
         ;
-asgn:   VAR '=' expr { $$=$1->u.val=$3; $1->type = VAR; }
+asgn:     VAR '=' expr {
+                if ($1->constant)
+                    execerror("cannot assign to $s\n", $1->name);
+                $$=$1->u.val=$3; $1->type = VAR; }
         ;
 expr:     NUMBER
         | VAR { if ($1->type == UNDEF)
@@ -81,7 +84,7 @@ int yylex(void)
         ungetc(c, stdin);
         *p = '\0';
         if ((s = lookup(sbuf)) == 0) {
-            s = install(sbuf, UNDEF, 0.0);
+            s = install(sbuf, UNDEF, 0.0, 0);
         }
         yylval.sym = s;
         return s->type == UNDEF ? VAR : s->type;

@@ -28,11 +28,12 @@ char *emalloc(unsigned n) {
 }
 
 // install s in symbol table
-Symbol *install(char *s, int t, double d) {
+Symbol *install(char *s, int t, double d, char constant) {
     Symbol *sp = (Symbol *) emalloc(sizeof(Symbol));
     sp->name = emalloc(strlen(s) + 1); // +1 for '\0'
     strcpy(sp->name, s);
     sp->type = t;
+    sp->constant = constant;
     sp->u.val = d;
     sp->next = symlist; // put at front of list
     symlist = sp;
