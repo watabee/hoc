@@ -25,6 +25,6 @@ extern void execute(Inst *p);
 extern void execerror(const char *s, const char *t);
 
 extern Inst *code(Inst f);
-extern Inst prog[];
+extern Inst *prog;
 extern void eval(), add(), sub(), mul(), div_(), negate(), power();
 extern void assign(), bltin(), varpush(), constpush(), print();

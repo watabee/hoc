@@ -1,28 +1,50 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "hoc.h"
 #include "y.tab.h"
 
+char *emalloc(unsigned n);
 extern double Pow(double x, double y);
 
-#define NSTACK 256
-static Datum stack[NSTACK]; // the stack
+//int stack_size = 1;
+int stack_size = 256;
+static Datum *stack = NULL; // the stack
 static Datum *stackp; // next free spot on stack
 
-#define NPROG 2000
-Inst prog[NPROG]; // the machine
+//int prog_size = 2;
+int prog_size = 2000;
+Inst *prog = NULL; // the machine
 Inst *progp; // next free spot for code generation
 Inst *pc; // program counter during execution
 
 // initialize for code generation
 void initcode() {
+    if (stack == NULL) {
+        stack = (Datum *) emalloc(sizeof(Datum) * stack_size);
+    } else {
+        memset(stack, 0, sizeof(Datum) * stack_size);
+    }
+    if (prog == NULL) {
+        prog = (Inst *)emalloc(sizeof(Inst) * prog_size);
+    } else {
+        memset(prog, 0, sizeof(Inst) * prog_size);
+    }
+
     stackp = stack;
     progp = prog;
 }
 
 // push d onto stack
 void push(Datum d) {
-    if (stackp >= &stack[NSTACK]) {
-        execerror("stack overflow", (char *) 0);
+    if (stackp >= stack + stack_size) {
+        //printf("*** stack_size = %d\n", stack_size);
+        Datum *newp = (Datum *)emalloc(sizeof(Datum) * stack_size * 2);
+        memcpy((Datum *)newp, (Datum *)stack, sizeof(Datum) * stack_size);
+        free(stack);
+        stack = newp;
+        stackp = stack + stack_size;
+        stack_size = stack_size * 2;
     }
     *stackp++ = d;
 }
@@ -38,8 +60,14 @@ Datum pop() {
 // install one instruction or operand
 Inst *code(Inst f) {
     Inst *oprogp = progp;
-    if (progp >= &prog[NPROG]) {
-        execerror("program too big", (char *) 0);
+    if (progp >= prog + prog_size) {
+        //printf("*** prog_size = %d\n", prog_size);
+        Inst *newp = (Inst *)emalloc(sizeof(Inst) * prog_size * 2);
+        memcpy((Inst *)newp, (Inst *)prog, sizeof(Inst) * prog_size);
+        free(prog);
+        prog = newp;
+        progp = prog + prog_size;
+        prog_size = prog_size * 2;
     }
     *progp++ = f;
     return oprogp;
