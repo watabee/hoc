@@ -24,7 +24,9 @@ extern void execute(Inst *p);
 
 extern void execerror(const char *s, const char *t);
 
-extern Inst *code(Inst f);
+#define PRINT_MACHINE 1
+#define code(c) codeimpl((Inst)(c), #c)
+extern Inst *codeimpl(Inst f, const char *name);
 extern Inst prog[], *progp;
 extern void eval(), add(), sub(), mul(), div_(), negate(), power();
 extern void assign(), bltin(), varpush(), constpush(), print();

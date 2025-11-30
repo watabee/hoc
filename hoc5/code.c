@@ -22,6 +22,19 @@ void initcode() {
     progp = prog;
 }
 
+// install one instruction or operand
+Inst *codeimpl(Inst f, const char *name) {
+#if PRINT_MACHINE
+    printf("%s\n", name);
+#endif
+    Inst *oprogp = progp;
+    if (progp >= &prog[NPROG]) {
+        execerror("program too big", (char *) 0);
+    }
+    *progp++ = f;
+    return oprogp;
+}
+
 // push d onto stack
 void push(Datum d) {
     if (stackp >= &stack[NSTACK]) {
@@ -36,23 +49,6 @@ Datum pop() {
         execerror("stack underflow", (char *) 0);
     }
     return *--stackp;
-}
-
-// install one instruction or operand
-Inst *code(Inst f) {
-    Inst *oprogp = progp;
-    if (progp >= &prog[NPROG]) {
-        execerror("program too big", (char *) 0);
-    }
-    *progp++ = f;
-    return oprogp;
-}
-
-// run the machine
-void execute(Inst *p) {
-    for (pc = p; *pc != STOP;) {
-        (*(*pc++))();
-    }
 }
 
 // push constant onto stack
@@ -266,3 +262,11 @@ void not() {
     d.val = (double)(d.val == 0.0);
     push(d);
 }
+
+// run the machine
+void execute(Inst *p) {
+    for (pc = p; *pc != STOP;) {
+        (*(*pc++))();
+    }
+}
+

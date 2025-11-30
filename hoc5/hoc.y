@@ -25,15 +25,15 @@ void yyerror(const char *s);
 %%
 list:       /* nothing */
         | list '\n'
-        | list asgn '\n'  { code2((Inst)pop, STOP); return 1; }
+        | list asgn '\n'  { code2(pop, STOP); return 1; }
         | list stmt '\n'  { code(STOP); return 1; }
-        | list expr '\n'  { code2((Inst)print, STOP); return 1; }
+        | list expr '\n'  { code2(print, STOP); return 1; }
         | list error '\n' { yyerrok; }
         ;
-asgn:     VAR '=' expr { $$ = $3; code3((Inst)varpush, (Inst)$1, (Inst)assign); }
+asgn:     VAR '=' expr { $$ = $3; code3(varpush, $1, assign); }
         ;
-stmt:     expr { code((Inst)pop); }
-        | PRINT expr { code((Inst)prexpr); $$ = $2; }
+stmt:     expr { code(pop); }
+        | PRINT expr { code(prexpr); $$ = $2; }
         | while cond stmt end {
                 ($1)[1] = (Inst)$3;     /* body of loop */
                 ($1)[2] = (Inst)$4; }   /* end, if cond fails */
@@ -48,9 +48,9 @@ stmt:     expr { code((Inst)pop); }
         ;
 cond:    '(' expr ')' { code(STOP); $$ = $2; }
         ;
-while:   WHILE { $$ = code3((Inst)whilecode, STOP, STOP); }
+while:   WHILE { $$ = code3(whilecode, STOP, STOP); }
         ;
-if:      IF { $$ = code((Inst)ifcode); code3(STOP, STOP, STOP); }
+if:      IF { $$ = code(ifcode); code3(STOP, STOP, STOP); }
         ;
 end:     /* nothing */  { code(STOP); $$ = progp; }
         ;
@@ -58,26 +58,26 @@ stmtlist: /* nothing */  { $$ = progp; }
         | stmtlist '\n'
         | stmtlist stmt
         ;
-expr:     NUMBER { $$ = code2((Inst)constpush, (Inst)$1); }
-        | VAR { $$ = code3((Inst)varpush, (Inst)$1, (Inst)eval); }
+expr:     NUMBER { $$ = code2(constpush, $1); }
+        | VAR { $$ = code3(varpush, $1, eval); }
         | asgn
-        | BLTIN '(' expr ')'    { $$ = $3; code2((Inst)bltin, (Inst)$1->u.ptr); }
+        | BLTIN '(' expr ')'    { $$ = $3; code2(bltin, $1->u.ptr); }
         | '(' expr ')' { $$ = $2; }
-        | expr '+' expr { code((Inst)add); }
-        | expr '-' expr { code((Inst)sub); }
-        | expr '*' expr { code((Inst)mul); }
-        | expr '/' expr { code((Inst)div_); }
-        | expr '^' expr { code((Inst)power); }
-        | '-' expr %prec UNARYMINUS  { $$ = $2; code((Inst)negate); }
-        | expr GT expr { code((Inst)gt); }
-        | expr GE expr { code((Inst)ge); }
-        | expr LT expr { code((Inst)lt); }
-        | expr LE expr { code((Inst)le); }
-        | expr EQ expr { code((Inst)eq); }
-        | expr NE expr { code((Inst)ne); }
-        | expr AND expr { code((Inst)and); }
-        | expr OR expr { code((Inst)or); }
-        | NOT expr { $$ = $2; code((Inst)not); }
+        | expr '+' expr { code(add); }
+        | expr '-' expr { code(sub); }
+        | expr '*' expr { code(mul); }
+        | expr '/' expr { code(div_); }
+        | expr '^' expr { code(power); }
+        | '-' expr %prec UNARYMINUS  { $$ = $2; code(negate); }
+        | expr GT expr { code(gt); }
+        | expr GE expr { code(ge); }
+        | expr LT expr { code(lt); }
+        | expr LE expr { code(le); }
+        | expr EQ expr { code(eq); }
+        | expr NE expr { code(ne); }
+        | expr AND expr { code(and); }
+        | expr OR expr { code(or); }
+        | NOT expr { $$ = $2; code(not); }
         ;
 %%
         /* end of grammer */
