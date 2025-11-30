@@ -30,7 +30,7 @@ list:       /* nothing */
         | list expr '\n'  { code2((Inst)print, STOP); return 1; }
         | list error '\n' { yyerrok; }
         ;
-asgn:     VAR '=' expr { code3((Inst)varpush, (Inst)$1, (Inst)assign); }
+asgn:     VAR '=' expr { $$ = $3; code3((Inst)varpush, (Inst)$1, (Inst)assign); }
         ;
 stmt:     expr { code((Inst)pop); }
         | PRINT expr { code((Inst)prexpr); $$ = $2; }
