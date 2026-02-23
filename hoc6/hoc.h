@@ -1,0 +1,45 @@
+typedef struct Symbol { // symbol table entry
+    char *name;
+    short type;
+    union {
+        double val; // VAR
+        double (*ptr)(double); // BLTIN
+        int (*defn)(); // FUNCTION, PROCEDURE
+        char *str; // STRING
+    } u;
+    struct Symbol *next; // to link to another
+} Symbol;
+Symbol *install(char *s, int t, double d), *lookup(char *s);
+
+typedef union Datum { // interpreter stack type
+    double val;
+    Symbol *sym;
+} Datum;
+
+extern int indef;
+
+extern Datum pop();
+extern void eval(), add(), sub(), mul(), div_(), negate(), power();
+
+extern void define(Symbol *sp);
+extern int moreinput();
+
+typedef int (*Inst)();    // machine instruction
+#define STOP    (Inst) 0
+
+extern void init();
+extern void initcode();
+extern void execute(Inst *p);
+
+extern void execerror(const char *s, const char *t);
+
+#define PRINT_MACHINE 1
+#define code(c) codeimpl((Inst)(c), #c)
+extern Inst *codeimpl(Inst f, const char *name);
+
+extern Inst *progp, *progbase, prog[];
+extern void assign(), bltin(), varpush(), constpush(), print(), varread();
+extern void prexpr(), prstr();
+extern void gt(), lt(), eq(), ge(), le(), ne(), and(), or(), not();
+extern void ifcode(), whilecode(), call(), arg(), argassign();
+extern void funcret(), procret();
