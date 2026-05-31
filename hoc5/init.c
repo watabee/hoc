@@ -21,11 +21,12 @@ static struct {
     char *name;
     int  kval;
 } keywords[] = {
-    "if",    IF,
-    "else",  ELSE,
-    "while", WHILE,
-    "print", PRINT,
-    0,       0
+    "if",        IF,
+    "else",      ELSE,
+    "while",     WHILE,
+    "for",       FOR,
+    "print",     PRINT,
+    0,           0
 };
 
 // Built-ins

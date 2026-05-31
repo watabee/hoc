@@ -178,6 +178,26 @@ void whilecode() {
     pc = *((Inst **)(savepc + 1)); // next statement
 }
 
+void forcode() {
+    Datum d;
+    // savepc    : init code
+    // savepc + 1: condition
+    // savepc + 2: update
+    // savepc + 3: loop body
+    // savepc + 4: next statement
+    Inst *savepc = pc;
+    execute(*((Inst **)savepc)); // init code
+    execute(*((Inst **)(savepc + 1))); // condition
+    d = pop();
+    while (d.val) {
+        execute(*((Inst **)(savepc + 3))); // body
+        execute(*((Inst **)(savepc + 2))); // update
+        execute(*((Inst **)(savepc + 1))); // condition
+        d = pop();
+    }
+    pc = *((Inst **)(savepc + 4)); // next statement
+}
+
 void ifcode() {
     Datum d;
     Inst *savepc = pc; // then part
@@ -270,3 +290,19 @@ void execute(Inst *p) {
     }
 }
 
+/*
+for(i= 0; i < 5 ;i = i + 1){
+	for(j = 0; j < 5; j = j+1){
+		print 10 * i + j
+	}
+}
+for(i= 0; i < 5 ;i = i + 1){
+	for(j = 0; j < 5; j = j+1){
+		if (j == 2) { break }
+		print 10 * i + j
+	}
+	print 999
+}
+print 1000
+
+*/

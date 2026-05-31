@@ -5,6 +5,8 @@
 #include "hoc.h"
 #define code2(c1, c2)   code(c1); code(c2)
 #define code3(c1, c2, c3)   code(c1); code(c2); code(c3)
+#define code4(c1, c2, c3, c4)   code(c1); code(c2); code(c3); code(c4)
+#define code5(c1, c2, c3, c4, c5)   code(c1); code(c2); code(c3); code(c4); code(c5)
 int yylex(void);
 void yyerror(const char *s);
 %}
@@ -12,8 +14,8 @@ void yyerror(const char *s);
         Symbol  *sym;  /* symbol table pointer */
         Inst    *inst; /* machine instruction */
 }
-%token  <sym>   NUMBER PRINT VAR BLTIN UNDEF WHILE IF ELSE
-%type   <inst>  stmt asgn expr stmtlist cond while if end
+%token  <sym>   NUMBER PRINT VAR BLTIN UNDEF WHILE FOR IF ELSE
+%type   <inst>  stmt asgn expr stmtlist cond while for if end forinit forcond forupd
 %right  '='
 %left   OR
 %left   AND
@@ -37,6 +39,12 @@ stmt:     expr { code(pop); }
         | while cond stmt end {
                 ($1)[1] = (Inst)$3;     /* body of loop */
                 ($1)[2] = (Inst)$4; }   /* end, if cond fails */
+        | for '(' forinit forcond forupd ')' stmt end {
+                ($1)[1] = (Inst)$3;     /* init */
+                ($1)[2] = (Inst)$4;     /* condition */
+                ($1)[3] = (Inst)$5;     /* update */
+                ($1)[4] = (Inst)$7;     /* body of loop */
+                ($1)[5] = (Inst)$8; }   /* end, if cond fails */
         | if cond stmt end { /* else-less if */
                 ($1)[1] = (Inst)$3;     /* then part */
                 ($1)[3] = (Inst)$4; }   /* end, if cond fails */
@@ -46,9 +54,17 @@ stmt:     expr { code(pop); }
                 ($1)[3] = (Inst)$7; }   /* end, if cond fails */
         | '{' stmtlist '}' { $$ = $2; }
         ;
+forinit:  expr ';' { code(STOP); }
+        ;
+forcond:  expr ';' { code(STOP); }
+        ;
+forupd:   expr { code(STOP); }
+        ;
 cond:    '(' expr ')' { code(STOP); $$ = $2; }
         ;
 while:   WHILE { $$ = code3(whilecode, STOP, STOP); }
+        ;
+for:     FOR { $$ = code(forcode); code5(STOP, STOP, STOP, STOP, STOP); }
         ;
 if:      IF { $$ = code(ifcode); code3(STOP, STOP, STOP); }
         ;
