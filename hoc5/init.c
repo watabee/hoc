@@ -25,6 +25,7 @@ static struct {
     "else",      ELSE,
     "while",     WHILE,
     "for",       FOR,
+    "break",     BREAK,
     "print",     PRINT,
     0,           0
 };

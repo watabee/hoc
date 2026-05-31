@@ -15,7 +15,7 @@ typedef union Datum { // interpreter stack type
 } Datum;
 extern Datum pop();
 
-typedef int (*Inst)();    // machine instruction
+typedef void (*Inst)();    // machine instruction
 #define STOP    (Inst) 0
 
 extern void init();
@@ -33,3 +33,4 @@ extern void assign(), bltin(), varpush(), constpush(), print();
 extern void prexpr();
 extern void gt(), lt(), eq(), ge(), le(), ne(), and(), or(), not();
 extern void ifcode(), whilecode(), forcode();
+extern void breakcode();

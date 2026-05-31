@@ -16,6 +16,8 @@ Inst prog[NPROG]; // the machine
 Inst *progp; // next free spot for code generation
 Inst *pc; // program counter during execution
 
+static int breakflag = 0;
+
 // initialize for code generation
 void initcode() {
     stackp = stack;
@@ -191,6 +193,10 @@ void forcode() {
     d = pop();
     while (d.val) {
         execute(*((Inst **)(savepc + 3))); // body
+        if (breakflag) {
+            breakflag = 0;
+            break;
+        }
         execute(*((Inst **)(savepc + 2))); // update
         execute(*((Inst **)(savepc + 1))); // condition
         d = pop();
@@ -285,9 +291,13 @@ void not() {
 
 // run the machine
 void execute(Inst *p) {
-    for (pc = p; *pc != STOP;) {
+    for (pc = p; *pc != STOP && !breakflag;) {
         (*(*pc++))();
     }
+}
+
+void breakcode() {
+    breakflag = 1;
 }
 
 /*
