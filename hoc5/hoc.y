@@ -14,8 +14,8 @@ void yyerror(const char *s);
         Symbol  *sym;  /* symbol table pointer */
         Inst    *inst; /* machine instruction */
 }
-%token  <sym>   NUMBER PRINT VAR BLTIN UNDEF WHILE FOR IF ELSE BREAK
-%type   <inst>  stmt asgn expr stmtlist cond while for if end forinit forcond forupd break
+%token  <sym>   NUMBER PRINT VAR BLTIN UNDEF WHILE FOR IF ELSE BREAK CONTINUE
+%type   <inst>  stmt asgn expr stmtlist cond while for if end forinit forcond forupd break continue
 %right  '='
 %left   OR
 %left   AND
@@ -54,6 +54,7 @@ stmt:     expr { code(pop); }
                 ($1)[3] = (Inst)$7; }   /* end, if cond fails */
         | '{' stmtlist '}' { $$ = $2; }
         | break
+        | continue
         ;
 forinit:  expr ';' { code(STOP); }
         ;
@@ -61,7 +62,9 @@ forcond:  expr ';' { code(STOP); }
         ;
 forupd:   expr { code(STOP); }
         ;
-break:    BREAK { code(breakcode); }
+break:    BREAK { $$ = code(breakcode); }
+        ;
+continue: CONTINUE { $$ = code(continuecode); }
         ;
 cond:    '(' expr ')' { code(STOP); $$ = $2; }
         ;

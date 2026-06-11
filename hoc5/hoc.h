@@ -33,4 +33,4 @@ extern void assign(), bltin(), varpush(), constpush(), print();
 extern void prexpr();
 extern void gt(), lt(), eq(), ge(), le(), ne(), and(), or(), not();
 extern void ifcode(), whilecode(), forcode();
-extern void breakcode();
+extern void breakcode(), continuecode();

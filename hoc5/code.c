@@ -17,6 +17,7 @@ Inst *progp; // next free spot for code generation
 Inst *pc; // program counter during execution
 
 static int breakflag = 0;
+static int continueflag = 0;
 
 // initialize for code generation
 void initcode() {
@@ -197,6 +198,7 @@ void forcode() {
             breakflag = 0;
             break;
         }
+        continueflag = 0; //
         execute(*((Inst **)(savepc + 2))); // update
         execute(*((Inst **)(savepc + 1))); // condition
         d = pop();
@@ -291,7 +293,7 @@ void not() {
 
 // run the machine
 void execute(Inst *p) {
-    for (pc = p; *pc != STOP && !breakflag;) {
+    for (pc = p; *pc != STOP && !breakflag && !continueflag;) {
         (*(*pc++))();
     }
 }
@@ -300,17 +302,31 @@ void breakcode() {
     breakflag = 1;
 }
 
+void continuecode() {
+    continueflag = 1;
+}
+
 /*
 for(i= 0; i < 5 ;i = i + 1){
 	for(j = 0; j < 5; j = j+1){
 		print 10 * i + j
 	}
 }
+//
 for(i= 0; i < 5 ;i = i + 1){
 	for(j = 0; j < 5; j = j+1){
 		if (j == 2) { break }
 		print 10 * i + j
 	}
+	print 999
+}
+print 1000
+
+for(i= 0; i < 5 ;i = i + 1){
+    for(j = 0; j < 5; j = j+1){
+        if (j == 2) continue
+        print 10 * i + j
+    }
 	print 999
 }
 print 1000
