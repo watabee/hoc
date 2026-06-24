@@ -360,7 +360,7 @@ void print() {
 void prexpr() {
     Datum d;
     d = pop();
-    printf("\t%.8g\n", d.val);
+    printf("%.8g", d.val);
 }
 
 // print string value
